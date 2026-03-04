@@ -16,15 +16,61 @@ const signupUser = async (req, res) => {
     // date_of_birth,
     // accountType,
   } = req.body;
+
+  try {
+    if (!fullName || !email || !password) {
+      res.status(400);
+      throw new Error('Email or Password are required');
+    }
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+      res.status(400);
+      throw new Error('Email already exists');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    //create user
+    const user = await User.create({
+      fullName,
+      email,
+      password: hashedPassword,
+    });
+    if (user) {
+      const token = createToken(user._id);
+      res.status(201).json({ user, token });
+    } else {
+      res.status(400);
+      throw new Error('Invalid user data');
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
-try {
-  if (!email || !password || !fullName)
-    res.status(400).json({ erro: })
-    throw new Error('Email or Password are required');
+//login user
+const loginUser = async (req, res) => {
+  const {
+    email,
+    password,
+  } = req.body;
 
-  const exists = await User.findOne({ fullName, email, password });
-      if (exists) return res.status;
+  try {
+   const user = await User.findOne({ email });
 
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      const token = createToken(user._id);
+      res.status(200).json({email, token});
+      throw new Error('Invalid email or password');
+    }else{
+      res.status(400);
+      throw new Error('Invalid email or password');
+    }
+  
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
-} catch (error) {}
+};
+module.exports={signupUser, loginUser};

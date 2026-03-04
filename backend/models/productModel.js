@@ -48,7 +48,7 @@ const productSchema = new Schema(
 
 // add virtual field id
 productSchema.set('toJSON', {
-  virtuals: true,
+  virtual: true,
   transform: (doc, ret) => {
     ret.id = ret._id;
     return ret;
