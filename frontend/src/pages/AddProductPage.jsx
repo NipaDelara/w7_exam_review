@@ -17,8 +17,9 @@ const AddProductPage = async () => {
     e.preventDefault()
     
   };
+const navigate = useNavigate();
 
-  const postProduct = async()=>{
+  const addProduct = async()=>{
     const res = await fetch("api/products",{
       method: "POST",
       headers :{
@@ -27,7 +28,7 @@ const AddProductPage = async () => {
     })
   }
   try{
-     await postProduct(product);
+     await addProduct(product);
     navigate("/")
   } catch(error){
     setError(error.message)
