@@ -3,8 +3,14 @@ const mongoose = require('mongoose');
 
 // GET /api/products
 const getAllProducts = async (req, res) => {
-  res.send('getAllProducts');
-};
+  try{
+    const products = await Product.find({});
+    return res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });   
+  }
+ 
+}
 
 // POST /api/products
 const createProduct = async (req, res) => {
@@ -34,6 +40,10 @@ const createProduct = async (req, res) => {
 
 // GET /api/products/:productId
 const getProductById = async (req, res) => {
+  //const{productId} = req.params;
+  //if (!mongoose.Types.ObjectId.isValid(productId))
+    //return res.status(400).json({ error: 'Invalid product ID' });
+    
   res.send('getProductById');
 };
 
