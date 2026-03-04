@@ -60,7 +60,26 @@ const getProductById = async (req, res) => {
 
 // PUT /api/products/:productId
 const updateProduct = async (req, res) => {
-  res.send('updateProduct');
+const {productId} =req.params;
+if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ error: 'Product not found' });
+  }
+  try{
+    const updatedProduct = await Product.findOneAndUpdate(
+      productId,
+      {...req.body},
+      {new: true,
+        runValidators: true,
+      }
+    );
+    if(!updatedProduct){
+      return res.status(404).json({error:'Product not found'});
+    }return res.status(200).json(updatedProduct);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  
 };
 
 // DELETE /api/products/:productId
