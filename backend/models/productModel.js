@@ -1,9 +1,14 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
 const productSchema = new Schema(
   {
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
     productName: {
       type: String,
       required: true,
@@ -43,7 +48,7 @@ const productSchema = new Schema(
       },
     },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, versionKey: false },
 );
 
 // add virtual field id
@@ -52,7 +57,7 @@ productSchema.set('toJSON', {
   transform: (doc, ret) => {
     ret.id = ret._id;
     return ret;
-  }
+  },
 });
 
-module.exports = mongoose.model("Product", productSchema);
+module.exports = mongoose.model('Product', productSchema);

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const requireAuth = require('../middleware/requireAuth');
 const {
   getAllProducts,
   createProduct,
@@ -8,14 +9,18 @@ const {
   deleteProduct,
 } = require('../controllers/productControllers');
 
+//!Public (no auth)
+
 // GET /api/products
 router.get('/', getAllProducts);
+// GET /api/products/:productId
+router.get('/:productId', getProductById);
+
+//!Protected (auth required)
+router.use(requireAuth);
 
 // POST /api/products
 router.post('/', createProduct);
-
-// GET /api/products/:productId
-router.get('/:productId', getProductById);
 
 // PUT /api/products/:productId
 router.put('/:productId', updateProduct);

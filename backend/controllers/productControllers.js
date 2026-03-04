@@ -22,7 +22,10 @@ const createProduct = async (req, res) => {
     supplier,
   } = req.body;
   try {
+    const user_id = req.user_id;
+
     const product = await Proroduc.create({
+      user_id,
       productName,
       caregory,
       description,
