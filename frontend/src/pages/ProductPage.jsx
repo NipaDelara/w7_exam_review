@@ -35,12 +35,37 @@ export default function ProductPage() {
   if (!product) return <p>Loading...</p>;
 
   const s = product.supplier || {};
+    const deleteProduct = async () => {
+    const ok = window.confirm("Delete this product?");
+    if (!ok) return;
+
+    const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || "Failed to delete product");
+    }
+
+    navigate("/");
+  };
 
   return (
     <div style={{ maxWidth: 960, margin: "0 auto" }}>
       <button onClick={() => navigate(-1)}>Back</button>
 
       <h2>{product.productName}</h2>
+            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <button onClick={() => navigate(`/edit/${id}`)}>Edit</button>
+        <button
+          onClick={() =>
+            deleteProduct().catch((e) => {
+              setError(e.message);
+            })
+          }
+        >
+          Delete
+        </button>
+      </div>
       <p><strong>Category:</strong> {product.category}</p>
       <p><strong>Description:</strong> {product.description}</p>
       <p><strong>Price:</strong> €{Number(product.price).toFixed(2)}</p>
@@ -49,6 +74,7 @@ export default function ProductPage() {
       <hr />
 
       <h3>Supplier</h3>
+      
       <p><strong>Name:</strong> {s.name}</p>
       <p><strong>Email:</strong> {s.contactEmail}</p>
       <p><strong>Phone:</strong> {s.contactPhone}</p>
