@@ -39,11 +39,23 @@ const createProduct = async (req, res) => {
 
 // GET /api/products/:productId
 const getProductById = async (req, res) => {
-  //const{productId} = req.params;
-  //if (!mongoose.Types.ObjectId.isValid(productId))
-  //return res.status(400).json({ error: 'Invalid product ID' });
+  const { productId } = req.params;
 
-  res.send('getProductById');
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(404).json({ error: 'Invalid product ID' });
+  }
+  try {
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Invalid product ID' });
+    }
+
+    return res.status(200).json(product);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+  // res.send('getProductById');
 };
 
 // PUT /api/products/:productId
