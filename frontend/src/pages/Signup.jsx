@@ -1,85 +1,57 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useField from "../hooks/useField";
+import useSignup from "../hooks/useSignup";
 
 function Signup({setIsAuthenticated }) {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [fullName, setFullName] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [gender, setGender] = useState("");
-    const [dateOfBirth, setDateOfBirth] = useState("");
-    const [accountType, setAccountType] = useState("");
+    const email = useField("email");
+    const password = useField("password");
+    const fullName = useField("text");
+    const phoneNumber = useField("tel");
+    const gender = useField("text");
+    const dateOfBirth = useField("date");
+    const accountType = useField("text");
   
     const navigate = useNavigate();
 
-    const handleSignup = async() =>{
-        try {
-            const response = await fetch("/api/users/signup", {
-                method: "POST",
-                headers:{
-                    "content-type": "application/json",
-                },
-                body: JSON.stringify({email, password, fullName, phoneNumber, gender, dateOfBirth, accountType}),
-            });
-
-            if (response.ok){
-                const user =await response.json();
-                localStorage.setItem("user",JSON.stringify(user));
-                console.log("Signup successful");
-                setIsAuthenticated(true);
-                navigate("/");
-            }
-        } catch(error) {
-            console.error("Signup failed:", error);
-        }
-    } 
+    const { signup, isLoading, error } = useSignup("/api/users/signup");
+    
+    const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const user = await signup({ 
+         email: email.value, password: password.value, fullName: fullName.value, phoneNumber: phoneNumber.value, gender: gender.value, dateOfBirth: dateOfBirth.value, accountType: accountType.value });
+    if (user) {
+      setIsAuthenticated(true);
+      navigate("/");
+    }
+  };
 
   return (
     <div className='form-container'>
     <h2>Sign Up</h2>
+    <form onSubmit={handleFormSubmit}>
     <label>
         Full name :
-        <input type="text" 
-        value={fullName} 
-        onChange={(e) => 
-        setFullName(e.target.value)} />
+        <input {...fullName} placeholder="Enter your full name" />
     </label>
 
     <label>
         Email :
-        <input type="email" 
-        value={email} 
-        onChange={(e) => 
-        setEmail(e.target.value)} 
-        placeholder="Enter your email"
-        />
+        <input {...email} placeholder="Enter your email" />
     </label>
 
     <label>
         Password :
-        <input type="password" 
-        value={password} 
-        onChange={(e) => 
-        setPassword(e.target.value)} 
-        placeholder="Enter your password"
-        />
+        <input {...password} placeholder="Enter your password" />
     </label>
 
     <label>
         Phone number :
-        <input type="number" 
-        value={phoneNumber} 
-        onChange={(e) => 
-        setPhoneNumber(e.target.value)} 
-        placeholder="Enter your phone number"
-        />
+        <input {...phoneNumber} placeholder="Enter your phone number" />
     </label>
 
     <label>
         Gender :
-        <select value={gender} 
-        onChange={(e) => 
-        setGender(e.target.value)}>
+        <select {...gender}>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
@@ -89,23 +61,20 @@ function Signup({setIsAuthenticated }) {
     <label>
         Date of birth :
         <input type="date" 
-        value={dateOfBirth} 
-        onChange={(e) => 
-        setDateOfBirth(e.target.value)} />
+        {...dateOfBirth} />
     </label>
 
     <label>
         Account type :
-        <select value={accountType} 
-        onChange={(e) => 
-        setAccountType(e.target.value)}>
+        <select {...accountType}>
             <option value="basic">Basic</option>
             <option value="premium">Premium</option>
         </select>
     </label>
-    <button className='signup-button' onClick={handleSignup}>Sign Up</button>
+    <button className='signup-button' type="submit">Sign Up</button>
+    </form>
     </div>
   )
 }
 
-export default Signup
+export default Signup;
