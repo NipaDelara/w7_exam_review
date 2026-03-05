@@ -8,13 +8,20 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
 
+  const user = JSON.parse(localStorage.getItem("user"))
+  const token = user ? user.token :null;
+  
   useEffect(() => {
     let isMounted = true;
 
     const fetchOne = async () => {
       try {
         setError(null);
-        const res = await fetch(`/api/products/${id}`);
+        const res = await fetch(`/api/products/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
 
         if (!res.ok) throw new Error(data?.error || "Failed to fetch product");

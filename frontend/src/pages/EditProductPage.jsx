@@ -19,13 +19,20 @@ const EditProductPage = () => {
   const [error, setError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user ? user.token : null;
+
   useEffect(() => {
     let isMounted = true;
 
     const loadProduct = async () => {
       try {
         setError(null);
-        const res = await fetch(`/api/products/${id}`);
+        const res = await fetch(`/api/products/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
 
         if (!res.ok) throw new Error(data?.error || "Failed to load product");
@@ -52,7 +59,7 @@ const EditProductPage = () => {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, token]);
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -76,7 +83,10 @@ const EditProductPage = () => {
 
       const res = await fetch(`/api/products/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(updatedProduct),
       });
 
